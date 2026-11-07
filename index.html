@@ -1,0 +1,59 @@
+import streamlit as st
+import pandas as pd
+
+st.title("보행자 안전 지도")
+
+if "records" not in st.session_state:
+    st.session_state.records = []
+
+place = st.text_input("위험 구간 장소")
+lat = st.number_input("위도", value=37.0)
+lon = st.number_input("경도", value=127.0)
+
+danger = st.selectbox(
+    "위험 유형",
+    ["불법 주정차", "보도 파손", "어두운 골목", "기타"]
+)
+
+severity = st.slider("위험 심각도", 1, 5, 3)
+
+if st.button("위험 구간 등록"):
+    if place.strip() == "":
+        st.warning("장소를 입력해주세요.")
+    else:
+        st.session_state.records.append({
+            "장소": place,
+            "위험 유형": danger,
+            "심각도": severity,
+            "위도": lat,
+            "경도": lon
+        })
+        st.success("위험 구간이 등록되었습니다.")
+
+if st.session_state.records:
+    df = pd.DataFrame(st.session_state.records)
+
+    result = df.groupby("장소").agg(
+        사례수=("장소", "count"),
+        평균심각도=("심각도", "mean"),
+        위도=("위도", "first"),
+        경도=("경도", "first")
+    ).reset_index()
+
+    result["위험점수"] = (
+        result["사례수"] * result["평균심각도"]
+    )
+
+    result = result.sort_values(
+        by="위험점수", ascending=False
+    )
+
+    st.subheader("위험 구간 분석 결과")
+    st.dataframe(result)
+
+    st.subheader("보행 안전 지도")
+    st.map(result.rename(
+        columns={"위도": "latitude", "경도": "longitude"}
+    )[["latitude", "longitude"]])
+else:
+    st.info("등록된 위험 구간이 없습니다.")
