@@ -13,29 +13,21 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: #f2f7fc;
-  color: #263849;
+  background: #f1f7fc;
+  color: #304357;
 }
 
 header {
   background: #dceeff;
-  padding: 25px 15px;
   text-align: center;
+  padding: 25px 10px;
 }
 
-header h1 {
-  margin: 0 0 8px;
-  font-size: 25px;
-}
-
-header p {
-  margin: 0;
-  color: #526d85;
-  font-size: 14px;
-}
+header h1 { margin: 0 0 8px; font-size: 24px; }
+header p { margin: 0; color: #62788c; font-size: 14px; }
 
 .container {
-  max-width: 1100px;
+  max-width: 1000px;
   margin: 25px auto;
   padding: 0 15px;
 }
@@ -44,28 +36,22 @@ header p {
   background: white;
   padding: 20px;
   margin-bottom: 18px;
-  border-radius: 14px;
+  border-radius: 13px;
   box-shadow: 0 3px 12px #dce6ef;
 }
 
-h2 {
-  font-size: 19px;
-  margin: 0 0 16px;
-}
+h2 { font-size: 19px; margin: 0 0 15px; }
 
 input, select, textarea, button {
   width: 100%;
   padding: 11px;
   margin: 6px 0 12px;
-  border: 1px solid #cbd9e6;
+  border: 1px solid #ccd9e5;
   border-radius: 8px;
   font-size: 14px;
 }
 
-textarea {
-  resize: vertical;
-  min-height: 65px;
-}
+textarea { min-height: 65px; resize: vertical; }
 
 button {
   background: #579bd8;
@@ -75,38 +61,31 @@ button {
   font-weight: bold;
 }
 
-button:hover {
-  background: #397fbd;
-}
-
-.search-row {
-  display: flex;
-  gap: 8px;
-}
-
-.search-row input {
-  flex: 1;
-}
-
-.search-row button {
-  width: 90px;
-}
+button:hover { background: #397fbd; }
 
 #map {
+  width: 100%;
   height: 420px;
   border-radius: 10px;
   z-index: 1;
 }
 
+.search {
+  display: flex;
+  gap: 8px;
+}
+
+.search input { flex: 1; }
+.search button { width: 85px; }
+
 .info {
-  font-size: 13px;
   color: #71869a;
-  margin: 8px 0;
+  font-size: 13px;
 }
 
 .stats {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
 
@@ -119,23 +98,24 @@ button:hover {
 
 .stat strong {
   display: block;
-  font-size: 25px;
   color: #347fbd;
+  font-size: 25px;
   margin-top: 7px;
 }
 
-.record {
-  border: 1px solid #e0e8ef;
-  border-radius: 10px;
+.record, .analysis-item {
+  background: #f4f8fc;
   padding: 13px;
+  border-radius: 9px;
   margin: 10px 0;
+  font-size: 14px;
 }
 
 .record-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .record button {
@@ -149,16 +129,8 @@ button:hover {
 .medium { color: #d99a32; }
 .high { color: #dc5555; }
 
-.analysis-item {
-  background: #f2f7fc;
-  padding: 12px;
-  border-radius: 8px;
-  margin: 9px 0;
-  font-size: 14px;
-}
-
 @media (max-width: 600px) {
-  header h1 { font-size: 21px; }
+  header h1 { font-size: 20px; }
   #map { height: 350px; }
   .card { padding: 15px; }
 }
@@ -169,10 +141,10 @@ button:hover {
 
 <header>
   <h1>보행자 위험 구간 기록 및 안전 지도</h1>
-  <p>우리 주변의 보행 위험 요소를 기록하고 분석하는 지도</p>
+  <p>상현동 주변의 보행 위험 요소를 기록하고 분석하는 지도</p>
 </header>
 
-<div class="container">
+<main class="container">
 
   <section class="card">
     <h2>위험 구간 등록</h2>
@@ -202,31 +174,28 @@ button:hover {
     <label>상세 내용</label>
     <textarea id="memo" placeholder="위험한 이유나 주변 상황을 입력하세요."></textarea>
 
-    <p class="info">지도에서 위치를 클릭하거나 주소를 검색해 위치를 선택하세요.</p>
-    <p id="selectedInfo" class="info">선택된 위치가 없습니다.</p>
-
+    <p class="info" id="selectedInfo">지도에서 위험 구간의 위치를 선택하세요.</p>
     <button onclick="addRecord()">위험 구간 등록하기</button>
   </section>
 
   <section class="card">
-    <h2>위험 구간 지도</h2>
+    <h2>상현동 위험 구간 지도</h2>
 
-    <div class="search-row">
-      <input id="address" placeholder="주소 또는 장소 검색">
+    <div class="search">
+      <input id="address" placeholder="상현동 주변 주소 검색">
       <button onclick="searchAddress()">검색</button>
     </div>
 
     <div id="map"></div>
-
     <p class="info">
-      ● 낮음 &nbsp; <span class="medium">●</span> 보통 &nbsp;
-      <span class="high">●</span> 높음
+      <span class="low">● 낮음</span>
+      <span class="medium">● 보통</span>
+      <span class="high">● 높음</span>
     </p>
   </section>
 
   <section class="card">
     <h2>위험 현황</h2>
-
     <div class="stats">
       <div class="stat">
         전체 기록 수
@@ -241,7 +210,7 @@ button:hover {
 
   <section class="card">
     <h2>위험 우선순위 분석</h2>
-    <div id="analysis">아직 등록된 기록이 없습니다.</div>
+    <div id="analysis">등록된 기록이 없습니다.</div>
   </section>
 
   <section class="card">
@@ -251,30 +220,40 @@ button:hover {
     <button onclick="deleteAll()" style="background:#e87575;">전체 기록 삭제</button>
   </section>
 
-</div>
+</main>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
-// 지도 기본 위치
-const schoolAddress = "경기도 용인시 수지구 상현로42번길 26-7";
+// 서원고등학교 주변을 기본 위치로 설정
+const defaultCenter = [37.3060, 127.0750];
 
-const map = L.map("map").setView([37.3000, 127.0780], 17);
+const map = L.map("map", {
+  center: defaultCenter,
+  zoom: 18,
+  minZoom: 15,
+  maxZoom: 20
+});
 
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+  attribution: "&copy; OpenStreetMap"
 }).addTo(map);
 
-// 선택한 위치
-let selectedLocation = null;
-let selectedMarker = null;
-let recordMarkers = [];
+// 상현동 주변으로 지도 이동 범위 제한
+function setMapBounds(lat, lon) {
+  const bounds = L.latLngBounds(
+    [lat - 0.008, lon - 0.010],
+    [lat + 0.008, lon + 0.010]
+  );
 
-let records = JSON.parse(localStorage.getItem("pedestrianSafetyRecords") || "[]");
+  map.setMaxBounds(bounds);
+  map.setMaxBoundsViscosity(0.9);
+}
 
-// 주소 검색
+// 기본 위치를 주소로 검색
 async function getCoordinates(address) {
-  const url = "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&accept-language=ko&q="
+  const url =
+    "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&accept-language=ko&q="
     + encodeURIComponent(address);
 
   const response = await fetch(url);
@@ -289,19 +268,40 @@ async function getCoordinates(address) {
   };
 }
 
-// 학교 주변으로 지도 이동
 async function setSchoolLocation() {
   try {
-    const location = await getCoordinates(schoolAddress);
-    map.setView([location.lat, location.lon], 17);
+    const location = await getCoordinates(
+      "서원고등학교 경기도 용인시 수지구 상현동"
+    );
+
+    map.setView([location.lat, location.lon], 18);
+    setMapBounds(location.lat, location.lon);
   } catch (error) {
-    console.log("기본 지도 위치를 불러오지 못했습니다.", error);
+    map.setView(defaultCenter, 18);
+    setMapBounds(defaultCenter[0], defaultCenter[1]);
+    console.log("기본 위치 검색 실패:", error);
   }
 }
 
 setSchoolLocation();
 
-// 지도 클릭으로 위치 선택
+let selectedLocation = null;
+let selectedMarker = null;
+let recordMarkers = [];
+
+let records = [];
+
+try {
+  records = JSON.parse(
+    localStorage.getItem("pedestrianSafetyRecords") || "[]"
+  );
+
+  if (!Array.isArray(records)) records = [];
+} catch {
+  records = [];
+}
+
+// 지도에서 위치 선택
 map.on("click", function(e) {
   setLocation(e.latlng.lat, e.latlng.lng);
 });
@@ -309,16 +309,16 @@ map.on("click", function(e) {
 function setLocation(lat, lon) {
   selectedLocation = { lat, lon };
 
-  if (selectedMarker) {
-    map.removeLayer(selectedMarker);
-  }
+  if (selectedMarker) map.removeLayer(selectedMarker);
 
   selectedMarker = L.marker([lat, lon]).addTo(map);
+
   document.getElementById("selectedInfo").textContent =
-    "위도: " + lat.toFixed(6) + " / 경도: " + lon.toFixed(6);
+    "위도: " + lat.toFixed(6) +
+    " / 경도: " + lon.toFixed(6);
 }
 
-// 주소 검색 버튼
+// 주소 검색
 async function searchAddress() {
   const address = document.getElementById("address").value.trim();
 
@@ -329,42 +329,42 @@ async function searchAddress() {
 
   try {
     const location = await getCoordinates(address);
-    map.setView([location.lat, location.lon], 17);
+
+    map.setView([location.lat, location.lon], 18);
     setLocation(location.lat, location.lon);
   } catch (error) {
-    alert(error.message || "주소를 검색할 수 없습니다.");
+    alert(error.message);
   }
 }
 
-// 위험 기록 등록
+// 위험 구간 등록
 function addRecord() {
   const place = document.getElementById("place").value.trim();
   const type = document.getElementById("type").value;
-  const severity = document.getElementById("severity").value;
+  const severity = Number(document.getElementById("severity").value);
   const memo = document.getElementById("memo").value.trim();
 
   if (!place || !type || !severity) {
-    alert("장소, 위험 유형, 위험 정도를 모두 입력하세요.");
+    alert("장소, 위험 유형, 위험 정도를 입력하세요.");
     return;
   }
 
   if (!selectedLocation) {
-    alert("지도에서 위험 구간의 위치를 선택하세요.");
+    alert("지도에서 위치를 선택하세요.");
     return;
   }
 
-  const record = {
+  records.push({
     id: Date.now() + Math.random(),
     place,
     type,
-    severity: Number(severity),
+    severity,
     memo,
     lat: selectedLocation.lat,
     lon: selectedLocation.lon,
     date: new Date().toLocaleDateString("ko-KR")
-  };
+  });
 
-  records.push(record);
   saveRecords();
 
   document.getElementById("place").value = "";
@@ -380,42 +380,34 @@ function addRecord() {
   }
 
   document.getElementById("selectedInfo").textContent =
-    "선택된 위치가 없습니다.";
+    "지도에서 위험 구간의 위치를 선택하세요.";
 
   renderAll();
   alert("위험 구간이 등록되었습니다.");
 }
 
-// 데이터 저장
+// 기록 저장
 function saveRecords() {
   localStorage.setItem("pedestrianSafetyRecords", JSON.stringify(records));
 }
 
-// 화면에 출력할 문자 처리
+// 입력한 내용의 HTML 처리
 function escapeHTML(value) {
-  return String(value).replace(/[&<>"']/g, function(char) {
-    return {
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#39;"
-    }[char];
-  });
+  return String(value).replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[char]);
 }
 
-// 위험 정도 표시
 function severityText(value) {
-  if (value === 1) return "낮음";
-  if (value === 2) return "보통";
-  return "높음";
+  return ["", "낮음", "보통", "높음"][value];
 }
 
-// 위험 정도별 색상
 function severityColor(value) {
-  if (value === 1) return "#36a56b";
-  if (value === 2) return "#e6a23c";
-  return "#e05252";
+  return ["", "#36a56b", "#e6a23c", "#e05252"][value];
 }
 
 // 기록 삭제
@@ -447,15 +439,15 @@ function renderAll() {
   renderMarkers();
 }
 
-// 현황 표시
+// 위험 현황
 function renderStats() {
   document.getElementById("totalCount").textContent = records.length;
 
   document.getElementById("highCount").textContent =
-    records.filter(record => record.severity === 3).length;
+    records.filter(r => r.severity === 3).length;
 }
 
-// 기록 목록 표시
+// 기록 목록
 function renderRecords() {
   const list = document.getElementById("recordList");
 
@@ -464,93 +456,88 @@ function renderRecords() {
     return;
   }
 
-  list.innerHTML = records.slice().reverse().map(record => `
+  list.innerHTML = records.slice().reverse().map(r => `
     <div class="record">
       <div class="record-top">
-        <strong>${escapeHTML(record.place)}</strong>
-        <button onclick="deleteRecord(${record.id})">삭제</button>
+        <strong>${escapeHTML(r.place)}</strong>
+        <button onclick="deleteRecord(${r.id})">삭제</button>
       </div>
-      <p>위험 유형: ${escapeHTML(record.type)}</p>
+      <p>위험 유형: ${escapeHTML(r.type)}</p>
       <p>위험 정도:
-        <span class="${record.severity === 1 ? "low" : record.severity === 2 ? "medium" : "high"}">
-          ${severityText(record.severity)}
+        <span style="color:${severityColor(r.severity)}">
+          ${severityText(r.severity)}
         </span>
       </p>
-      <p>${escapeHTML(record.memo || "상세 내용 없음")}</p>
-      <p class="info">${escapeHTML(record.date)}</p>
+      <p>${escapeHTML(r.memo || "상세 내용 없음")}</p>
+      <p class="info">${escapeHTML(r.date)}</p>
     </div>
   `).join("");
 }
 
 // 같은 장소의 기록 분석
 function renderAnalysis() {
-  const analysis = document.getElementById("analysis");
+  const area = document.getElementById("analysis");
 
   if (!records.length) {
-    analysis.textContent = "아직 등록된 기록이 없습니다.";
+    area.textContent = "등록된 기록이 없습니다.";
     return;
   }
 
   const groups = {};
 
-  records.forEach(record => {
-    const key = record.place.trim().toLowerCase();
+  records.forEach(r => {
+    const key = r.place.trim().toLowerCase();
 
     if (!groups[key]) {
       groups[key] = {
-        place: record.place,
+        place: r.place,
         count: 0,
         total: 0
       };
     }
 
     groups[key].count++;
-    groups[key].total += record.severity;
+    groups[key].total += r.severity;
   });
 
-  const result = Object.values(groups).map(group => {
-    const average = group.total / group.count;
+  const result = Object.values(groups).map(g => {
+    const average = g.total / g.count;
 
     return {
-      ...group,
+      ...g,
       average,
-      score: group.count * average
+      score: g.count * average
     };
-  });
+  }).sort((a, b) => b.score - a.score);
 
-  result.sort((a, b) => b.score - a.score);
-
-  analysis.innerHTML = result.map((item, index) => `
+  area.innerHTML = result.map((g, i) => `
     <div class="analysis-item">
-      <strong>${index + 1}위. ${escapeHTML(item.place)}</strong>
-      <p>기록 횟수: ${item.count}회</p>
-      <p>평균 위험도: ${item.average.toFixed(1)} / 3</p>
-      <p>위험 우선순위 점수: ${item.score.toFixed(1)}</p>
+      <strong>${i + 1}위. ${escapeHTML(g.place)}</strong>
+      <p>기록 횟수: ${g.count}회</p>
+      <p>평균 위험도: ${g.average.toFixed(1)} / 3</p>
+      <p>위험 우선순위 점수: ${g.score.toFixed(1)}</p>
     </div>
   `).join("");
 }
 
-// 지도에 위험 마커 표시
+// 위험 정도에 따라 지도에 마커 표시
 function renderMarkers() {
   recordMarkers.forEach(marker => map.removeLayer(marker));
   recordMarkers = [];
 
-  records.forEach(record => {
-    const marker = L.circleMarker(
-      [record.lat, record.lon],
-      {
-        radius: 9,
-        color: severityColor(record.severity),
-        fillColor: severityColor(record.severity),
-        fillOpacity: 0.8
-      }
-    ).addTo(map);
+  records.forEach(r => {
+    const marker = L.circleMarker([r.lat, r.lon], {
+      radius: 9,
+      color: severityColor(r.severity),
+      fillColor: severityColor(r.severity),
+      fillOpacity: 0.85
+    }).addTo(map);
 
     marker.bindPopup(`
-      <strong>${escapeHTML(record.place)}</strong><br>
-      위험 유형: ${escapeHTML(record.type)}<br>
-      위험 정도: ${severityText(record.severity)}<br>
-      ${escapeHTML(record.memo)}
+      <strong>${escapeHTML(r.place)}</strong><br>
+      위험 유형: ${escapeHTML(r.type)}<br>
+      위험 정도: ${severityText(r.severity)}<br>
+      ${escapeHTML(r.memo)}
     `);
 
     recordMarkers.push(marker);
@@ -564,23 +551,26 @@ function downloadCSV() {
     return;
   }
 
-  const header = ["장소", "위험 유형", "위험 정도", "상세 내용", "위도", "경도", "등록 날짜"];
+  const header = [
+    "장소", "위험 유형", "위험 정도",
+    "상세 내용", "위도", "경도", "등록 날짜"
+  ];
 
-  const rows = records.map(record => [
-    record.place,
-    record.type,
-    severityText(record.severity),
-    record.memo,
-    record.lat,
-    record.lon,
-    record.date
+  const rows = records.map(r => [
+    r.place,
+    r.type,
+    severityText(r.severity),
+    r.memo,
+    r.lat,
+    r.lon,
+    r.date
   ]);
 
-  const csv = [header, ...rows]
-    .map(row => row.map(value =>
+  const csv = [header, ...rows].map(row =>
+    row.map(value =>
       '"' + String(value).replace(/"/g, '""') + '"'
-    ).join(","))
-    .join("\n");
+    ).join(",")
+  ).join("\n");
 
   const blob = new Blob(["\uFEFF" + csv], {
     type: "text/csv;charset=utf-8;"
@@ -596,9 +586,8 @@ function downloadCSV() {
   URL.revokeObjectURL(url);
 }
 
-// 처음 화면 표시
 renderAll();
-
 </script>
+
 </body>
 </html>
