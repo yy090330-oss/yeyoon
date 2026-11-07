@@ -1,68 +1,145 @@
-import streamlit as st
-import pandas as pd
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>보행자 안전 지도</title>
+<style>
+body {
+  font-family: sans-serif;
+  background: #f4f7fb;
+  color: #243447;
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+h1 { color: #20527d; }
+input, select, button {
+  font: inherit;
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+button {
+  cursor: pointer;
+  background: #20527d;
+  color: white;
+}
+#result {
+  background: #eaf2f8;
+  padding: 20px;
+  margin-top: 20px;
+  border-radius: 12px;
+}
+</style>
+</head>
 
-# 위험 구간 데이터 저장 공간 생성
-if "records" not in st.session_state:
-    st.session_state.records = []
+<body>
+<h1>🚶 보행자 위험 구간 기록 및 안전 지도</h1>
+<p>위험 구간을 등록하고 장소별 위험도를 확인해 보세요.</p>
 
-# 위험 구간 정보 입력
-st.title("보행자 안전 지도")
+<input id="place" placeholder="위험 구간 장소">
 
-place = st.text_input("위험 구간 장소")
-danger = st.selectbox(
-    "위험 유형",
-    ["불법 주정차", "보도 파손", "어두운 골목", "기타"]
-)
-severity = st.slider("위험 심각도", 1, 5, 3)
-lat = st.number_input("위도", value=37.0)
-lon = st.number_input("경도", value=127.0)
+<select id="type">
+<option>불법 주정차</option>
+<option>보도 파손</option>
+<option>어두운 골목</option>
+<option>기타</option>
+</select>
 
-# 입력 정보 저장 및 예외 처리
-if st.button("위험 구간 등록"):
-    if place.strip() == "":
-        st.warning("장소를 입력해주세요.")
-    else:
-        st.session_state.records.append({
-            "장소": place,
-            "위험 유형": danger,
-            "심각도": severity,
-            "위도": lat,
-            "경도": lon
-        })
-        st.success("위험 구간이 등록되었습니다.")
+<select id="severity">
+<option value="1">위험도 1</option>
+<option value="2">위험도 2</option>
+<option value="3">위험도 3</option>
+<option value="4">위험도 4</option>
+<option value="5">위험도 5</option>
+</select>
 
-# 위험 구간 분석 및 지도 표시
-if st.session_state.records:
-    df = pd.DataFrame(st.session_state.records)
+<input id="lat" type="number" step="any" placeholder="위도">
+<input id="lon" type="number" step="any" placeholder="경도">
 
-    result = df.groupby("장소").agg(
-        사례수=("장소", "count"),
-        평균심각도=("심각도", "mean"),
-        위도=("위도", "first"),
-        경도=("경도", "first")
-    ).reset_index()
+<button onclick="addRecord()">위험 구간 등록</button>
 
-    # 장소별 위험 점수 계산
-    result["위험점수"] = (
-        result["사례수"] * result["평균심각도"]
-    )
+<div id="result">등록된 위험 구간이 없습니다.</div>
 
-    # 위험 점수가 높은 순서대로 정렬
-    result = result.sort_values(
-        by="위험점수", ascending=False
-    )
+<script>
+// 위험 구간 정보를 저장하는 배열
+let records = JSON.parse(
+  localStorage.getItem("records") || "[]"
+);
 
-    st.subheader("위험 구간 분석 결과")
-    st.dataframe(result)
+// 위험 구간 등록 기능
+function addRecord() {
+  const place = document.getElementById("place").value.trim();
+  const type = document.getElementById("type").value;
+  const severity = Number(document.getElementById("severity").value);
+  const lat = Number(document.getElementById("lat").value);
+  const lon = Number(document.getElementById("lon").value);
 
-    # 위도와 경도를 이용해 지도에 표시
-    st.subheader("보행 안전 지도")
-    st.map(result.rename(
-        columns={
-            "위도": "latitude",
-            "경도": "longitude"
-        }
-    )[["latitude", "longitude"]])
+  // 입력값 오류 확인
+  if (!place || document.getElementById("lat").value === "" ||
+      document.getElementById("lon").value === "" ||
+      !Number.isFinite(lat) || !Number.isFinite(lon) ||
+      lat < -90 || lat > 90 || lon < -180 || lon > 180) {
+    alert("장소와 올바른 위도, 경도를 입력해주세요.");
+    return;
+  }
 
-else:
-    st.info("등록된 위험 구간이 없습니다.")
+  // 입력한 정보를 배열에 저장
+  records.push({place, type, severity, lat, lon});
+
+  localStorage.setItem("records", JSON.stringify(records));
+
+  // 정보 등록 후 결과 화면 갱신
+  showResult();
+}
+
+// 장소별 위험도 분석 기능
+function showResult() {
+  const groups = {};
+
+  records.forEach(r => {
+    if (!groups[r.place]) {
+      groups[r.place] = {
+        count: 0,
+        total: 0
+      };
+    }
+
+    groups[r.place].count++;
+    groups[r.place].total += r.severity;
+  });
+
+  // 사례 수와 평균 심각도를 이용해 위험 점수 계산
+  const result = Object.keys(groups).map(place => {
+    const g = groups[place];
+    const average = g.total / g.count;
+
+    return {
+      place: place,
+      count: g.count,
+      average: average,
+      score: g.count * average
+    };
+  });
+
+  // 위험 점수가 높은 순서대로 정렬
+  result.sort((a, b) => b.score - a.score);
+
+  // 분석 결과를 화면에 출력
+  document.getElementById("result").innerHTML =
+    result.length === 0
+    ? "등록된 위험 구간이 없습니다."
+    : result.map(r =>
+      `<p><b>${r.place}</b><br>
+      사례 수: ${r.count}건<br>
+      평균 심각도: ${r.average.toFixed(1)}<br>
+      위험 점수: ${r.score.toFixed(1)}</p>`
+    ).join("");
+}
+
+// 프로그램 실행 시 저장된 데이터 불러오기
+showResult();
+</script>
+</body>
+</html>
